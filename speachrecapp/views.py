@@ -221,10 +221,13 @@ def  detect_face(request):
 
     # Load the pre-trained Haar Cascade classifier for face detection
             face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
+            eye_cascade=cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml' )
             # Start capturing video from the camera
             cap = cv2.VideoCapture(0)  # 0 is the default camera index, change it if you have multiple cameras
 
+
+
+            eye_visible=False # keeps track of wheather the eye was visible in the previous frame 
             while True:
                 # Read the frame from the camera
                 ret, frame = cap.read()
@@ -234,26 +237,43 @@ def  detect_face(request):
                 # Convert the frame to grayscale (necessary for face detection)
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-                # Detect faces in the frame
+# Detect faces in the frame
                 faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
 
-                # Draw rectangles around the faces
-                i=0
+# Draw rectangles around the faces
+                i=0  # count the number of face
+                blink_count=0 # count the eye blink
+
+                current_eye_visible=False
                 for (x, y, w, h) in faces:
+                    roi_gray=gray[y:y+h,x:x+w]
+                # eye phase to calculate eye blink{ 
+                    eyes=eye_cascade.detectMultiScale3(roi_gray)
+                    if len(eyes)>0:
+                        current_eye_visible=True #Eye(s) detected in the current frame
+                    if eye_visible and not current_eye_visible:
+                        blink_count+=1
+                    eye_visible=current_eye_visible
+                    out.write(frame)
+
+                # }
+            
+
+# this is face count phase{
+
                     cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0),2)
 
-                    # Increment 
+             # Increment 
                     i=i+1
 
                     cv2.putText(frame,'face num'+str(i),(x-10,y-10),
                                 cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
                     
-                print(i)
-
-                    
+                # 
+                #   }  
 
                 out.write(frame)
-                # Display the frame with face rectangles
+                # Display the frame with  face rectangles and 
                 cv2.imshow('Face Detection', frame)
 
                 # Check for the 'q' key to quit the program
@@ -266,6 +286,9 @@ def  detect_face(request):
             cap.release()
             out.release()
             cv2.destroyAllWindows()
+
+            print(i)
+            print(blink_count)
 
 
         videoname=request.GET["nam"]
