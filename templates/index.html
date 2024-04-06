@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speach Recognition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+    
+<body class="justify-center items-center flex h-screen"> 
+<div class="bg-slate-200 p-8 shadow-2xl sm:w-96 w-full rounded-2xl flex ">
+    <form action="" method="post" enctype="multipart/form-data"> 
+        {% csrf_token%}
+        <label for="" class="text-lime-700 text-3xl p-5 my-64 font-medium">Enter the file</label>
+        <input type="file" name="vid" required class="p-5 font-bold">
+       
+        
+    
+    
+
+        <button class="bg-green-800 text-white  py-2 px-4 rounded-md mx-48" type="submit"> Submit</button>
+
+        {{data}}
+        
+    </form>
+
+</body>
+</html>
